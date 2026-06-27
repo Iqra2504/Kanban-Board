@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zenith Kanban - Task Manager</title>
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dark-mode.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-group">
+        <div class="logo-icon"><i class="fa-solid fa-list-check"></i></div>
+        <div>
+          <h1>Zenith Kanban</h1>
+          <p class="subtitle">Streamline your workflow in real-time</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="demo-btn" class="btn btn-secondary" title="Load sample tasks">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Load Demo</span>
+        </button>
+        <button id="archive-btn" class="btn btn-secondary" title="View Archived Tasks">
+          <i class="fa-solid fa-box-archive"></i> <span>Archive</span>
+        </button>
+        <button id="export-btn" class="btn btn-secondary" title="Export board state to JSON">
+          <i class="fa-solid fa-download"></i> <span>Export</span>
+        </button>
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle light/dark theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Dashboard Statistics Bar -->
+    <section class="stats-bar" aria-label="Dashboard Statistics">
+      <div class="stats-card total-tasks">
+        <div class="stats-info">
+          <span class="stats-label">Total Tasks</span>
+          <span id="stat-total" class="stats-number">0</span>
+        </div>
+        <div class="stats-icon"><i class="fa-solid fa-cubes"></i></div>
+      </div>
+      
+      <div class="stats-card in-progress-tasks">
+        <div class="stats-info">
+          <span class="stats-label">In Progress</span>
+          <span id="stat-inprogress" class="stats-number">0</span>
+        </div>
+        <div class="stats-icon"><i class="fa-solid fa-spinner spinner-slow"></i></div>
+      </div>
+      
+      <div class="stats-card completed-tasks">
+        <div class="stats-info">
+          <span class="stats-label">Completed</span>
+          <span id="stat-completed" class="stats-number">0</span>
+        </div>
+        <div class="stats-icon"><i class="fa-solid fa-circle-check"></i></div>
+      </div>
+      
+      <div class="stats-card overdue-tasks" id="stat-overdue-card">
+        <div class="stats-info">
+          <span class="stats-label">Overdue</span>
+          <span id="stat-overdue" class="stats-number">0</span>
+        </div>
+        <div class="stats-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+      </div>
+
+      <div class="stats-card progress-percentage-card">
+        <div class="stats-info">
+          <span class="stats-label">Completion Rate</span>
+          <span id="stat-percent-text" class="stats-number">0%</span>
+        </div>
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar-track">
+            <div id="stat-progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter & Search Section -->
+    <section class="controls-bar">
+      <div class="search-wrapper">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="search-input" placeholder="Search tasks... (Press '/' to focus)" aria-label="Search tasks">
+        <span class="search-shortcut">/</span>
+      </div>
+      
+      <div class="filter-group">
+        <div class="select-wrapper">
+          <i class="fa-solid fa-filter select-icon"></i>
+          <select id="priority-filter" aria-label="Filter by priority">
+            <option value="all">All Priorities</option>
+            <option value="high">High Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="low">Low Priority</option>
+          </select>
+        </div>
+
+        <div class="select-wrapper">
+          <i class="fa-solid fa-arrow-down-sort-numeric select-icon"></i>
+          <select id="sort-by" aria-label="Sort tasks">
+            <option value="dateCreated">Date Created (Newest)</option>
+            <option value="dueDate">Due Date (Soonest)</option>
+            <option value="priority">Priority (High First)</option>
+          </select>
+        </div>
+
+        <button id="clear-filters-btn" class="btn btn-text hidden">
+          <i class="fa-solid fa-rotate-left"></i> Clear
+        </button>
+      </div>
+    </section>
+
+    <!-- Mobile Column Navigation Tabs -->
+    <nav class="column-tabs" id="column-navigation-tabs">
+      <button class="tab-link active" data-target="todo-col">
+        To Do <span id="tab-todo-count" class="tab-badge">0</span>
+      </button>
+      <button class="tab-link" data-target="inprogress-col">
+        In Progress <span id="tab-inprogress-count" class="tab-badge">0</span>
+      </button>
+      <button class="tab-link" data-target="done-col">
+        Done <span id="tab-done-count" class="tab-badge">0</span>
+      </button>
+    </nav>
+
+    <!-- Board Columns -->
+    <main class="board-grid">
+      <!-- To Do Column -->
+      <section id="todo-col" class="board-column col-todo">
+        <div class="column-header">
+          <h2>
+            <span class="indicator-dot"></span>
+            To Do
+            <span id="badge-todo" class="count-badge">0</span>
+          </h2>
+          <button class="add-task-inline-btn" data-column="todo" title="Add task to To Do">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+        <div id="todo-list" class="column-body" data-column="todo">
+          <!-- Task cards dynamic insert -->
+        </div>
+      </section>
+
+      <!-- In Progress Column -->
+      <section id="inprogress-col" class="board-column col-inprogress">
+        <div class="column-header">
+          <h2>
+            <span class="indicator-dot"></span>
+            In Progress
+            <span id="badge-inprogress" class="count-badge">0</span>
+          </h2>
+          <button class="add-task-inline-btn" data-column="inprogress" title="Add task to In Progress">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+        <div id="inprogress-list" class="column-body" data-column="inprogress">
+          <!-- Task cards dynamic insert -->
+        </div>
+      </section>
+
+      <!-- Done Column -->
+      <section id="done-col" class="board-column col-done">
+        <div class="column-header">
+          <h2>
+            <span class="indicator-dot"></span>
+            Done
+            <span id="badge-done" class="count-badge">0</span>
+          </h2>
+          <button class="add-task-inline-btn" data-column="done" title="Add task to Done">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+        <div id="done-list" class="column-body" data-column="done">
+          <!-- Task cards dynamic insert -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal: Create / Edit Task -->
+  <div id="task-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-title">Create Task</h2>
+        <button id="modal-close-btn" class="modal-close" aria-label="Close dialog">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="task-form" novalidate>
+        <input type="hidden" id="task-id">
+        
+        <div class="form-group">
+          <label for="task-title-input">Title <span class="required">*</span></label>
+          <input type="text" id="task-title-input" placeholder="e.g., Build the login page" required>
+          <span class="error-msg" id="error-title"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="task-desc-input">Description</label>
+          <textarea id="task-desc-input" placeholder="Describe the task objective..." rows="3"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="task-priority-input">Priority <span class="required">*</span></label>
+            <select id="task-priority-input" required>
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+
+          <div class="form-group half-width">
+            <label for="task-duedate-input">Due Date <span class="required">*</span></label>
+            <input type="date" id="task-duedate-input" required>
+            <span class="error-msg" id="error-duedate"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="tag-input-field">Tags</label>
+          <div class="tag-input-container">
+            <div id="tags-pills-list" class="tags-pills"></div>
+            <input type="text" id="tag-input-field" placeholder="Type tag & press Enter or comma">
+          </div>
+          <p class="form-help">Enter tags like HTML, CSS, React. Click "x" or backspace to remove.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="task-column-input">Assigned Column <span class="required">*</span></label>
+          <select id="task-column-input" required>
+            <option value="todo">To Do</option>
+            <option value="inprogress">In Progress</option>
+            <option value="done">Done</option>
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="modal-submit-btn" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Custom Confirmation (Archive / Delete) -->
+  <div id="confirm-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="modal-card modal-small">
+      <div class="modal-header">
+        <h2 id="confirm-title">Manage Task</h2>
+        <button id="confirm-close-btn" class="modal-close" aria-label="Close dialog">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="confirm-icon-warning"><i class="fa-solid fa-circle-question"></i></div>
+        <p>Would you like to move <strong id="confirm-task-title">this task</strong> to the archive, or permanently delete it?</p>
+      </div>
+      <div class="modal-actions modal-column-actions">
+        <button id="confirm-archive-btn" class="btn btn-primary btn-block">
+          <i class="fa-solid fa-box-archive"></i> Archive Task
+        </button>
+        <button id="confirm-delete-btn" class="btn btn-danger btn-block">
+          <i class="fa-solid fa-trash"></i> Delete Permanently
+        </button>
+        <button id="confirm-cancel-btn" class="btn btn-secondary btn-block">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Archive View -->
+  <div id="archive-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="archive-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-box-archive"></i> Archived Tasks</h2>
+        <button id="archive-close-btn" class="modal-close" aria-label="Close dialog">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="archive-empty-state" class="empty-state">
+          <i class="fa-solid fa-box-open empty-icon"></i>
+          <p>No archived tasks found.</p>
+        </div>
+        <div id="archive-list-container" class="archive-list">
+          <!-- Archived items rendered here -->
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="archive-modal-close-btn" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/board.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
