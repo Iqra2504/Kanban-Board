@@ -1,0 +1,94 @@
+/* ==========================================================================
+   Zenith Kanban - Transitions and Animations
+   ========================================================================== */
+
+/* Modal Fade-In and Scale-Up */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Simple Fade-In */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* In-Progress Spinner Rotation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Apply animation classes */
+.spinner-slow {
+  animation: spin 3s linear infinite;
+}
+
+/* Micro-interactions: Cards & Controls */
+.btn, 
+.add-task-inline-btn, 
+.card-btn,
+.theme-toggle-btn,
+.tab-link {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              background-color 0.2s ease, 
+              color 0.2s ease, 
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+/* Active pressed button state */
+.btn:active, 
+.add-task-inline-btn:active,
+.card-btn:active,
+.theme-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Slide in animation for new items */
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.new-card-added {
+  animation: cardSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Pulsing effect for overdue card badges */
+@keyframes alertPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.overdue-badge-alert {
+  animation: alertPulse 2s infinite;
+}
