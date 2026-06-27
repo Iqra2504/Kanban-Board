@@ -1,0 +1,95 @@
+/* ==========================================================================
+   Zenith Kanban - Dark Mode Theme Overrides
+   ========================================================================== */
+
+body.dark {
+  /* Dark Slate & Navy Theme Palette */
+  --bg-primary: #0b0f19;
+  --bg-secondary: #131b2e;
+  --bg-column: #0d1222;
+  --bg-card: #1e293b;
+  --border-color: #2e3c54;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  /* Semi-transparent glow colors */
+  --primary-glow: rgba(99, 102, 241, 0.25);
+  --success-bg: rgba(16, 185, 129, 0.18);
+  --warning-bg: rgba(245, 158, 11, 0.18);
+  --danger-bg: rgba(239, 68, 68, 0.18);
+  
+  /* Soft glow shadows for dark mode elements */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.4), 0 4px 12px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark theme specific element refinements */
+body.dark .logo-icon {
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+/* Inputs, selects, and textareas override */
+body.dark input[type="text"],
+body.dark input[type="date"],
+body.dark select,
+body.dark textarea {
+  border-color: var(--border-color);
+  background-color: #1a2336;
+}
+
+body.dark input[type="text"]:focus,
+body.dark input[type="date"]:focus,
+body.dark select:focus,
+body.dark textarea:focus {
+  border-color: var(--primary);
+  background-color: #1e293b;
+}
+
+body.dark .search-shortcut {
+  background-color: #243049;
+  color: var(--text-secondary);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark #search-input {
+  background-color: #131b2e;
+}
+
+body.dark #search-input:focus {
+  background-color: #1e293b;
+}
+
+/* Modal adjustments */
+body.dark .modal-overlay {
+  background-color: rgba(3, 7, 18, 0.6);
+}
+
+/* Done treatment for dark mode cards */
+body.dark .done-card-treatment {
+  background-color: rgba(19, 27, 46, 0.3) !important;
+}
+
+body.dark .done-card-treatment .task-card-title {
+  color: var(--text-muted);
+}
+
+/* Overdue card subtle bg tweak */
+body.dark .task-card.overdue-card {
+  background-color: rgba(239, 68, 68, 0.04);
+}
+
+/* Custom scrollbars for dark mode */
+body.dark .column-body::-webkit-scrollbar-thumb,
+body.dark .modal-body::-webkit-scrollbar-thumb,
+body.dark #task-form::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+}
+
+body.dark .column-body::-webkit-scrollbar-track,
+body.dark .modal-body::-webkit-scrollbar-track,
+body.dark #task-form::-webkit-scrollbar-track {
+  background-color: transparent;
+}
